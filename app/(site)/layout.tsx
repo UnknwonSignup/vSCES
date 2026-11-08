@@ -9,6 +9,8 @@ import { DiscordConnect } from '@/components/site/discord-connect'
 import { Chatbot } from '@/components/site/chatbot'
 import { ChatbotProvider } from '@/components/site/chatbot-context'
 
+export const dynamic = 'force-dynamic'
+
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSettings()
   const bannerLink = safeUrl(settings.banner.link)

@@ -8,6 +8,8 @@ import { DiscordConnect } from '@/components/site/discord-connect'
 import { Chatbot } from '@/components/site/chatbot'
 import { ChatbotProvider } from '@/components/site/chatbot-context'
 
+export const dynamic = 'force-dynamic'
+
 function DiscordIcon({ className }: { className?: string }) {
   return (
     <svg className={className ?? 'size-4'} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

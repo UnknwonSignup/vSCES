@@ -6,8 +6,8 @@ import { Redis } from '@upstash/redis'
 import { randomUUID } from 'node:crypto'
 
 const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL || 'https://magnetic-slug-183300.upstash.io',
-  token: process.env.UPSTASH_REDIS_REST_TOKEN || 'gQAAAAAAAswEAAIgcDI2YTE1MzAwNzI1ZDM0NWM2YmE2NjA5MDZhNzg0ZDk3MA',
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
 })
 
 // ── Types ────────────────────────────────────────────────────────────────────

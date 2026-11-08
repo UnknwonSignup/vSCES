@@ -84,7 +84,10 @@ export async function getDiscordSession(): Promise<DiscordSession | null> {
     const [expiresStr, id, username, avatar] = parts
     if (Number(expiresStr) <= Date.now()) return null
     return { id, username, avatar: avatar || null }
-  } catch (err) {
+  } catch (err: unknown) {
+    if (typeof err === 'object' && err !== null && 'digest' in err && (err as { digest?: string }).digest === 'DYNAMIC_SERVER_USAGE') {
+      throw err
+    }
     console.error('[discord-auth] session error:', err)
     return null
   }
