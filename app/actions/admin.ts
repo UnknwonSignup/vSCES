@@ -237,7 +237,21 @@ export async function deleteStaffAction(fd: FormData) {
 
 // ── 3D LOGO MAKER ─────────────────────────────────────────────────────────────
 
-export async function saveLogoAction(_base64Data: string): Promise<ActionState> {
+export async function saveLogoAction(base64Data: string): Promise<ActionState> {
   await requireAdmin()
-  return { ok: false, message: 'Logo saving not supported on this deployment.' }
+  if (!base64Data || !base64Data.startsWith('data:image/')) {
+    return { ok: false, message: 'Invalid image data format.' }
+  }
+  const currentSettings = await readSettings()
+  await writeSettings({ ...currentSettings, logoUrl: base64Data })
+  refresh()
+  return { ok: true, message: 'Website logo updated live across the entire site!' }
+}
+
+export async function resetLogoAction(): Promise<ActionState> {
+  await requireAdmin()
+  const currentSettings = await readSettings()
+  await writeSettings({ ...currentSettings, logoUrl: '' })
+  refresh()
+  return { ok: true, message: 'Logo reset to default.' }
 }

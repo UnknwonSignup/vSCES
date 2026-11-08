@@ -1,6 +1,6 @@
 import { formatDate } from '@/lib/utils'
 import Link from 'next/link'
-import { ArrowRight, Pin, ShieldCheck, Sparkles, Trophy, Users } from 'lucide-react'
+import { ArrowRight, Pin, ShieldCheck, Sparkles, Trophy, Users, Swords, Coins, Compass, Star, type LucideIcon } from 'lucide-react'
 import { OnlineStaffWidget, PageTitle, Panel, PlayerHead, SocialsWidget } from '@/components/site/widgets'
 import { FeaturesShowcase } from '@/components/site/features-showcase'
 import { HowToJoin } from '@/components/site/how-to-join'
@@ -8,6 +8,27 @@ import { FloatingQuickDock } from '@/components/site/floating-dock'
 import { getAnnouncements, getForumOverview, getStaff } from '@/lib/queries'
 import { getSettings } from '@/lib/settings'
 import { safeUrl } from '@/lib/settings-shared'
+
+const BADGE_ICONS: Record<string, LucideIcon> = {
+  sparkles: Sparkles,
+  shield: ShieldCheck,
+  users: Users,
+  trophy: Trophy,
+  swords: Swords,
+  coins: Coins,
+  compass: Compass,
+  star: Star,
+}
+
+const BADGE_COLORS: Record<string, string> = {
+  purple: 'text-purple-400',
+  emerald: 'text-emerald-400',
+  blue: 'text-blue-400',
+  amber: 'text-amber-400',
+  rose: 'text-rose-400',
+  red: 'text-rose-400',
+  cyan: 'text-cyan-400',
+}
 
 export default async function HomePage() {
   const settings = await getSettings()
@@ -19,37 +40,48 @@ export default async function HomePage() {
   ])
 
   const discordUrl = safeUrl(settings.socials.discord)
+  const badges = settings.highlightBadges && settings.highlightBadges.length > 0
+    ? settings.highlightBadges
+    : [
+        { label: 'Vanilla+ Survival SMP', desc: 'Enhanced mechanics & claims', icon: 'sparkles', color: 'purple' },
+        { label: '100% Grief Protected', desc: 'Build safely with shovel claims', icon: 'shield', color: 'emerald' },
+        { label: 'Active Community', desc: 'Friendly staff & active Discord', icon: 'users', color: 'blue' },
+        { label: 'Vote & Earn Rewards', desc: 'Daily keys, cash & perks', icon: 'trophy', color: 'amber' },
+      ]
 
   return (
     <div className="space-y-10">
       {/* Quick Server Highlights Ribbon */}
       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-        {[
-          { label: 'Vanilla+ Survival SMP', desc: 'Enhanced mechanics & claims', icon: Sparkles, color: 'text-purple-400' },
-          { label: '100% Grief Protected', desc: 'Build safely with shovel claims', icon: ShieldCheck, color: 'text-emerald-400' },
-          { label: 'Active Community', desc: 'Friendly staff & active Discord', icon: Users, color: 'text-blue-400' },
-          { label: 'Vote & Earn Rewards', desc: 'Daily keys, cash & perks', icon: Trophy, color: 'text-amber-400' },
-        ].map(({ label, desc, icon: Icon, color }) => (
-          <div
-            key={label}
-            className="flex items-center gap-3 rounded-xl border border-border/80 bg-card/60 p-3 shadow-sm backdrop-blur transition-all duration-200 hover:border-primary/40 hover:bg-card"
-          >
-            <div className={`flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary/80 ${color}`}>
-              <Icon className="size-4" />
+        {badges.map(({ label, desc, icon, color }) => {
+          const Icon = BADGE_ICONS[icon] || Sparkles
+          const colorClass = BADGE_COLORS[color] || 'text-purple-400'
+          return (
+            <div
+              key={label}
+              className="flex items-center gap-3 rounded-xl border border-border/80 bg-card/60 p-3 shadow-sm backdrop-blur transition-all duration-200 hover:border-primary/40 hover:bg-card"
+            >
+              <div className={`flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary/80 ${colorClass}`}>
+                <Icon className="size-4" />
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-xs font-bold text-foreground">{label}</p>
+                <p className="truncate text-[11px] text-muted-foreground">{desc}</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="truncate text-xs font-bold text-foreground">{label}</p>
-              <p className="truncate text-[11px] text-muted-foreground">{desc}</p>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Interactive Connection Guide (Java & Bedrock) */}
-      <HowToJoin serverIp={settings.serverIp} />
+      <HowToJoin
+        serverIp={settings.serverIp}
+        howToJoin={settings.howToJoin}
+        serverName={settings.serverName}
+      />
 
       {/* Features Showcase Grid */}
-      <FeaturesShowcase />
+      <FeaturesShowcase featuresList={settings.featuresList} />
 
       {/* Main Content Layout: Announcements & Forum + Sidebar Widgets */}
       <div className="flex flex-col gap-8 lg:flex-row">

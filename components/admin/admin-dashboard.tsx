@@ -63,6 +63,7 @@ export function AdminDashboard({
         <Tabs defaultValue="general" className="gap-6">
           <TabsList className="flex h-auto w-full flex-wrap justify-start">
             <TabsTrigger value="general">General</TabsTrigger>
+            <TabsTrigger value="homepage">Homepage &amp; Layout</TabsTrigger>
             <TabsTrigger value="features">Sections</TabsTrigger>
             <TabsTrigger value="socials">Socials</TabsTrigger>
             <TabsTrigger value="content">Rules, Vote &amp; Store</TabsTrigger>

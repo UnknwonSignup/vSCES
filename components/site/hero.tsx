@@ -83,11 +83,12 @@ export async function Hero({ settings }: { settings: SiteSettings }) {
 
         <Link href="/" className="order-1 lg:order-2 group">
           <Image
-            src="/images/reverie-logo.png"
+            src={settings.logoUrl || '/images/reverie-logo.png'}
             alt={settings.serverName}
             width={1322}
             height={493}
             priority
+            unoptimized={Boolean(settings.logoUrl?.startsWith('data:'))}
             className="h-auto w-72 transition-all duration-300 group-hover:scale-[1.04] md:w-[26rem]"
             style={{
               filter: `hue-rotate(${hue}) drop-shadow(0 10px 30px color-mix(in srgb, var(--primary) 45%, transparent))`,

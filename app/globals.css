@@ -2,6 +2,27 @@
 @import 'tw-animate-css';
 @import 'shadcn/tailwind.css';
 
+@font-face {
+  font-family: 'Minecraftia';
+  src: url('https://cdn.jsdelivr.net/gh/South-Paw/typeface-minecraft/files/minecraft.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/gh/South-Paw/typeface-minecraft/files/minecraft.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Hide Netlify feedback badge / drawer overlay */
+#netlify-badge,
+.netlify-badge,
+[data-netlify-drawer],
+[class*="netlify-drawer"],
+iframe[src*="netlify"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

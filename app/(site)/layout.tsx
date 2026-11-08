@@ -8,6 +8,7 @@ import { getDiscordSession } from '@/lib/discord-auth'
 import { DiscordConnect } from '@/components/site/discord-connect'
 import { Chatbot } from '@/components/site/chatbot'
 import { ChatbotProvider } from '@/components/site/chatbot-context'
+import { cn } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,11 +17,17 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const bannerLink = safeUrl(settings.banner.link)
   const discordUrl = safeUrl(settings.socials.discord)
   const discordSession = await getDiscordSession()
+  const isTopbar = settings.navigationStyle === 'topbar'
 
   return (
     <ChatbotProvider>
-      <div className="min-h-dvh pb-16 md:pb-0 md:pl-20">
-        <Sidebar features={settings.features} discordUrl={discordUrl} />
+      <div className={cn("min-h-dvh pb-16 md:pb-0", !isTopbar && "md:pl-20")}>
+        <Sidebar
+          features={settings.features}
+          discordUrl={discordUrl}
+          mode={settings.navigationStyle}
+          serverName={settings.serverName}
+        />
         {settings.banner.enabled && settings.banner.text && (
           <div className="bg-brand px-4 py-2 text-center text-sm font-medium text-primary-foreground">
             <Megaphone className="mr-2 inline size-4 align-[-3px]" aria-hidden="true" />

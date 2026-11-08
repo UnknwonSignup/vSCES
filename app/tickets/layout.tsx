@@ -54,10 +54,11 @@ export default async function TicketsLayout({ children }: { children: React.Reac
 
               <Link href="/" className="hidden items-center gap-2.5 transition-opacity hover:opacity-85 sm:flex">
                 <Image
-                  src="/images/reverie-logo.png"
+                  src={settings.logoUrl || '/images/reverie-logo.png'}
                   alt={settings.serverName}
                   width={1322}
                   height={493}
+                  unoptimized={Boolean(settings.logoUrl?.startsWith('data:'))}
                   className="h-7 w-auto drop-shadow-sm"
                   priority
                 />

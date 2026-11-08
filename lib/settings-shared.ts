@@ -37,6 +37,31 @@ export type LinkItem = { name: string; url: string }
 export type RuleItem = { title: string; body: string }
 export type StorePackage = { name: string; price: string; description: string; url: string }
 
+export type HighlightBadge = {
+  label: string
+  desc: string
+  icon: string
+  color: string
+}
+
+export type FeatureCard = {
+  title: string
+  description: string
+  tag: string
+  icon: string
+  color: string
+}
+
+export type HowToJoinSettings = {
+  javaIp: string
+  bedrockIp: string
+  bedrockPort: string
+  javaVersion: string
+  bedrockVersion: string
+}
+
+export type NavigationStyle = 'sidebar' | 'topbar'
+
 export type SiteSettings = {
   serverName: string
   tagline: string
@@ -45,13 +70,18 @@ export type SiteSettings = {
   discordServerId: string
   storeUrl: string
   footerText: string
+  logoUrl?: string
   siteTheme: SiteTheme
+  navigationStyle: NavigationStyle
   banner: { enabled: boolean; text: string; link: string }
   socials: Record<SocialKey, string>
   features: Record<FeatureKey, boolean>
   voteLinks: LinkItem[]
   rules: RuleItem[]
   storePackages: StorePackage[]
+  highlightBadges: HighlightBadge[]
+  howToJoin: HowToJoinSettings
+  featuresList: FeatureCard[]
 }
 
 export const DEFAULT_SETTINGS: SiteSettings = {
@@ -62,7 +92,9 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   discordServerId: '',
   storeUrl: '',
   footerText: 'Reverie SMP is not affiliated with Mojang AB or Microsoft.',
+  logoUrl: '',
   siteTheme: 'purple',
+  navigationStyle: 'sidebar',
   banner: { enabled: false, text: 'Season 1 is now live! Join today.', link: '' },
   socials: { discord: 'https://discord.gg/reverie', youtube: '', tiktok: '', twitter: '', instagram: '', twitch: '' },
   features: {
@@ -94,6 +126,63 @@ export const DEFAULT_SETTINGS: SiteSettings = {
     { name: 'Lucid Rank', price: '$9.99', description: 'Everything in Dreamer plus /fly in spawn and 5 extra homes.', url: '' },
     { name: 'Reverie Rank', price: '$19.99', description: 'All perks, custom tag and priority queue.', url: '' },
   ],
+  highlightBadges: [
+    { label: 'Vanilla+ Survival SMP', desc: 'Enhanced mechanics & claims', icon: 'sparkles', color: 'purple' },
+    { label: '100% Grief Protected', desc: 'Build safely with shovel claims', icon: 'shield', color: 'emerald' },
+    { label: 'Active Community', desc: 'Friendly staff & active Discord', icon: 'users', color: 'blue' },
+    { label: 'Vote & Earn Rewards', desc: 'Daily keys, cash & perks', icon: 'trophy', color: 'amber' },
+  ],
+  howToJoin: {
+    javaIp: 'play.reveriesmp.net',
+    bedrockIp: 'play.reveriesmp.net',
+    bedrockPort: '19132',
+    javaVersion: '1.20 - 1.21.x',
+    bedrockVersion: 'Latest',
+  },
+  featuresList: [
+    {
+      title: 'Grief-Free Land Claims',
+      description: 'Claim your territory effortlessly with a golden shovel. Trust friends, configure permissions, and build your dream base with 100% protection.',
+      tag: 'Anti-Grief',
+      icon: 'shield',
+      color: 'emerald',
+    },
+    {
+      title: 'Player-Driven Economy',
+      description: 'Create player chest shops, trade in the /ah Auction House, and earn currency through jobs, mining, and farming. Zero pay-to-win mechanics.',
+      tag: 'Economy',
+      icon: 'coins',
+      color: 'amber',
+    },
+    {
+      title: 'Custom Enchantments',
+      description: 'Discover over 50+ unique, balanced custom enchants. Combine enchants, forge legendary tools, and stand out in both PvE dungeons and PvP battles.',
+      tag: 'Enchants',
+      icon: 'sparkles',
+      color: 'purple',
+    },
+    {
+      title: 'Dungeons & World Bosses',
+      description: 'Team up with fellow players to conquer instanced dungeons, defeat custom world bosses, and earn exclusive cosmetic rewards and rare crate keys.',
+      tag: 'PvE & Bosses',
+      icon: 'swords',
+      color: 'rose',
+    },
+    {
+      title: 'Skills & Progression',
+      description: 'Level up your mcMMO-style stats through everyday actions. Master woodcutting, fishing, archery, and mining to unlock passive abilities.',
+      tag: 'Skills',
+      icon: 'compass',
+      color: 'blue',
+    },
+    {
+      title: 'Java & Bedrock Crossplay',
+      description: 'Play anywhere, anytime! Full crossplay support allows PC (Java) and Mobile, Console, or Windows 10 (Bedrock) players to explore together seamlessly.',
+      tag: 'Crossplay',
+      icon: 'smartphone',
+      color: 'cyan',
+    },
+  ],
 }
 
 const str = (value: unknown, fallback: string, max = 2000) =>
@@ -124,6 +213,7 @@ export function normalizeSettings(input: unknown): SiteSettings {
     discordServerId: str(raw.discordServerId, d.discordServerId, 40).replace(/\D/g, ''),
     storeUrl: str(raw.storeUrl, d.storeUrl, 300),
     footerText: str(raw.footerText, d.footerText, 300),
+    logoUrl: typeof raw.logoUrl === 'string' ? raw.logoUrl : d.logoUrl,
     siteTheme: theme,
     banner: {
       enabled: bool(banner.enabled, d.banner.enabled),
@@ -145,6 +235,29 @@ export function normalizeSettings(input: unknown): SiteSettings {
         description: str(i.description, '', 300),
         url: str(i.url, '', 300),
       })) ?? d.storePackages,
+    navigationStyle: (raw.navigationStyle === 'topbar' ? 'topbar' : 'sidebar') as NavigationStyle,
+    highlightBadges:
+      arr(raw.highlightBadges, (i) => ({
+        label: str(i.label, '', 80),
+        desc: str(i.desc, '', 160),
+        icon: str(i.icon, 'sparkles', 40),
+        color: str(i.color, 'purple', 40),
+      })) ?? d.highlightBadges,
+    howToJoin: {
+      javaIp: str((raw.howToJoin as Record<string, unknown>)?.javaIp, d.howToJoin.javaIp, 120),
+      bedrockIp: str((raw.howToJoin as Record<string, unknown>)?.bedrockIp, d.howToJoin.bedrockIp, 120),
+      bedrockPort: str((raw.howToJoin as Record<string, unknown>)?.bedrockPort, d.howToJoin.bedrockPort, 10),
+      javaVersion: str((raw.howToJoin as Record<string, unknown>)?.javaVersion, d.howToJoin.javaVersion, 40),
+      bedrockVersion: str((raw.howToJoin as Record<string, unknown>)?.bedrockVersion, d.howToJoin.bedrockVersion, 40),
+    },
+    featuresList:
+      arr(raw.featuresList, (i) => ({
+        title: str(i.title, '', 100),
+        description: str(i.description, '', 300),
+        tag: str(i.tag, '', 40),
+        icon: str(i.icon, 'sparkles', 40),
+        color: str(i.color, 'purple', 40),
+      })) ?? d.featuresList,
   }
 }
 

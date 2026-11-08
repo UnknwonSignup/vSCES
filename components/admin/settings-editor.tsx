@@ -133,6 +133,319 @@ export function SettingsEditor({ settings }: { settings: SiteSettings }) {
         {saveBar}
       </TabsContent>
 
+      {/* ── HOMEPAGE & LAYOUT ── */}
+      <TabsContent value="homepage" className="flex flex-col gap-6">
+        <Card
+          title="Navigation & Layout Style"
+          description="Choose how visitors navigate your website: left vertical dock or modern top header bar."
+        >
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <button
+              type="button"
+              onClick={() => set('navigationStyle', 'sidebar')}
+              className={`flex flex-col gap-2 rounded-xl border-2 p-4 text-left transition-all ${
+                s.navigationStyle === 'sidebar'
+                  ? 'border-primary bg-primary/10 shadow-md'
+                  : 'border-border bg-secondary/30 hover:border-primary/40'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sm text-foreground">🧭 Left Sidebar Dock</span>
+                {s.navigationStyle === 'sidebar' && (
+                  <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary">
+                    Active
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Vertical side navigation on desktop with glowing icons, floating logo, and mobile bottom bar.
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => set('navigationStyle', 'topbar')}
+              className={`flex flex-col gap-2 rounded-xl border-2 p-4 text-left transition-all ${
+                s.navigationStyle === 'topbar'
+                  ? 'border-primary bg-primary/10 shadow-md'
+                  : 'border-border bg-secondary/30 hover:border-primary/40'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sm text-foreground">🔝 Top Header Bar</span>
+                {s.navigationStyle === 'topbar' && (
+                  <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-bold text-primary">
+                    Active
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Clean, full-width glassmorphic header bar at the top with logo, nav links, Discord, and AI chat.
+              </p>
+            </button>
+          </div>
+        </Card>
+
+        {/* Server Highlights Badges (Image 3) */}
+        <Card
+          title="Server Highlights Ribbon (4 Badges)"
+          description="The 4 highlight badges shown directly under the hero section on the homepage."
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            {(s.highlightBadges ?? []).map((badge, idx) => (
+              <div
+                key={idx}
+                className="flex flex-col gap-3 rounded-xl border border-border bg-secondary/40 p-4"
+              >
+                <div className="flex items-center justify-between border-b border-border/60 pb-2">
+                  <span className="text-xs font-bold text-primary">Badge #{idx + 1}</span>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={badge.color}
+                      onChange={(e) => {
+                        const next = [...(s.highlightBadges ?? [])]
+                        next[idx] = { ...next[idx], color: e.target.value }
+                        set('highlightBadges', next)
+                      }}
+                      className="rounded border border-border bg-card px-2 py-1 text-xs"
+                    >
+                      <option value="purple">Purple</option>
+                      <option value="emerald">Emerald</option>
+                      <option value="blue">Blue</option>
+                      <option value="amber">Amber</option>
+                      <option value="rose">Rose</option>
+                      <option value="cyan">Cyan</option>
+                    </select>
+
+                    <select
+                      value={badge.icon}
+                      onChange={(e) => {
+                        const next = [...(s.highlightBadges ?? [])]
+                        next[idx] = { ...next[idx], icon: e.target.value }
+                        set('highlightBadges', next)
+                      }}
+                      className="rounded border border-border bg-card px-2 py-1 text-xs"
+                    >
+                      <option value="sparkles">Sparkles</option>
+                      <option value="shield">Shield</option>
+                      <option value="users">Users</option>
+                      <option value="trophy">Trophy</option>
+                      <option value="swords">Swords</option>
+                      <option value="coins">Coins</option>
+                      <option value="compass">Compass</option>
+                      <option value="star">Star</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Field
+                    label="Title"
+                    id={`badge-label-${idx}`}
+                    value={badge.label}
+                    onChange={(e) => {
+                      const next = [...(s.highlightBadges ?? [])]
+                      next[idx] = { ...next[idx], label: e.target.value }
+                      set('highlightBadges', next)
+                    }}
+                  />
+                  <Field
+                    label="Description"
+                    id={`badge-desc-${idx}`}
+                    value={badge.desc}
+                    onChange={(e) => {
+                      const next = [...(s.highlightBadges ?? [])]
+                      next[idx] = { ...next[idx], desc: e.target.value }
+                      set('highlightBadges', next)
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {/* Connection Guide (Java & Bedrock) */}
+        <Card
+          title="Connection Guide ('How to Join')"
+          description="Customize the server IPs, Bedrock port, and version recommendations on the interactive guide."
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field
+              label="Java Server IP"
+              id="guideJavaIp"
+              value={s.howToJoin?.javaIp ?? s.serverIp}
+              onChange={(e) =>
+                set('howToJoin', {
+                  ...(s.howToJoin ?? {
+                    javaIp: s.serverIp,
+                    bedrockIp: s.serverIp,
+                    bedrockPort: '19132',
+                    javaVersion: '1.20 - 1.21.x',
+                    bedrockVersion: 'Latest',
+                  }),
+                  javaIp: e.target.value,
+                })
+              }
+              hint="IP copied by PC / Java players"
+            />
+            <Field
+              label="Bedrock Server IP"
+              id="guideBedrockIp"
+              value={s.howToJoin?.bedrockIp ?? s.serverIp}
+              onChange={(e) =>
+                set('howToJoin', {
+                  ...(s.howToJoin ?? {
+                    javaIp: s.serverIp,
+                    bedrockIp: s.serverIp,
+                    bedrockPort: '19132',
+                    javaVersion: '1.20 - 1.21.x',
+                    bedrockVersion: 'Latest',
+                  }),
+                  bedrockIp: e.target.value,
+                })
+              }
+              hint="IP for Mobile / Console / Win10"
+            />
+            <Field
+              label="Bedrock Port"
+              id="guideBedrockPort"
+              value={s.howToJoin?.bedrockPort ?? '19132'}
+              onChange={(e) =>
+                set('howToJoin', {
+                  ...(s.howToJoin ?? {
+                    javaIp: s.serverIp,
+                    bedrockIp: s.serverIp,
+                    bedrockPort: '19132',
+                    javaVersion: '1.20 - 1.21.x',
+                    bedrockVersion: 'Latest',
+                  }),
+                  bedrockPort: e.target.value,
+                })
+              }
+              hint="Usually 19132"
+            />
+            <Field
+              label="Recommended Java Version"
+              id="guideJavaVer"
+              value={s.howToJoin?.javaVersion ?? '1.20 - 1.21.x'}
+              onChange={(e) =>
+                set('howToJoin', {
+                  ...(s.howToJoin ?? {
+                    javaIp: s.serverIp,
+                    bedrockIp: s.serverIp,
+                    bedrockPort: '19132',
+                    javaVersion: '1.20 - 1.21.x',
+                    bedrockVersion: 'Latest',
+                  }),
+                  javaVersion: e.target.value,
+                })
+              }
+              hint="e.g. 1.20 - 1.21.x"
+            />
+          </div>
+        </Card>
+
+        {/* Why Play Feature Cards */}
+        <Card
+          title="Why Play Feature Cards (6 Cards)"
+          description="Customize the 6 feature showcase cards shown on the homepage."
+        >
+          <div className="grid gap-4 md:grid-cols-2">
+            {(s.featuresList ?? []).map((feat, idx) => (
+              <div
+                key={idx}
+                className="flex flex-col gap-3 rounded-xl border border-border bg-secondary/40 p-4"
+              >
+                <div className="flex items-center justify-between border-b border-border/60 pb-2">
+                  <span className="text-xs font-bold text-primary">Feature #{idx + 1}</span>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={feat.color}
+                      onChange={(e) => {
+                        const next = [...(s.featuresList ?? [])]
+                        next[idx] = { ...next[idx], color: e.target.value }
+                        set('featuresList', next)
+                      }}
+                      className="rounded border border-border bg-card px-2 py-1 text-xs"
+                    >
+                      <option value="emerald">Emerald</option>
+                      <option value="amber">Amber</option>
+                      <option value="purple">Purple</option>
+                      <option value="rose">Rose</option>
+                      <option value="blue">Blue</option>
+                      <option value="cyan">Cyan</option>
+                    </select>
+
+                    <select
+                      value={feat.icon}
+                      onChange={(e) => {
+                        const next = [...(s.featuresList ?? [])]
+                        next[idx] = { ...next[idx], icon: e.target.value }
+                        set('featuresList', next)
+                      }}
+                      className="rounded border border-border bg-card px-2 py-1 text-xs"
+                    >
+                      <option value="shield">Shield</option>
+                      <option value="coins">Coins</option>
+                      <option value="sparkles">Sparkles</option>
+                      <option value="swords">Swords</option>
+                      <option value="compass">Compass</option>
+                      <option value="smartphone">Smartphone</option>
+                      <option value="users">Users</option>
+                      <option value="trophy">Trophy</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="col-span-2">
+                      <Field
+                        label="Card Title"
+                        id={`feat-title-${idx}`}
+                        value={feat.title}
+                        onChange={(e) => {
+                          const next = [...(s.featuresList ?? [])]
+                          next[idx] = { ...next[idx], title: e.target.value }
+                          set('featuresList', next)
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <Field
+                        label="Tag / Pill"
+                        id={`feat-tag-${idx}`}
+                        value={feat.tag}
+                        onChange={(e) => {
+                          const next = [...(s.featuresList ?? [])]
+                          next[idx] = { ...next[idx], tag: e.target.value }
+                          set('featuresList', next)
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <Field
+                    label="Description"
+                    id={`feat-desc-${idx}`}
+                    textarea
+                    rows={2}
+                    value={feat.description}
+                    onChange={(e) => {
+                      const next = [...(s.featuresList ?? [])]
+                      next[idx] = { ...next[idx], description: e.target.value }
+                      set('featuresList', next)
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {saveBar}
+      </TabsContent>
+
       {/* ── SECTIONS / FEATURES ── */}
       <TabsContent value="features" className="flex flex-col gap-6">
         <Card title="Website sections" description="Toggle parts of the website on or off. Disabled pages return 404 and are hidden from navigation.">

@@ -3,14 +3,25 @@
 import { useState } from 'react'
 import { Check, Copy, Monitor, Smartphone, Terminal, HelpCircle, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
+import type { HowToJoinSettings } from '@/lib/settings-shared'
 
-export function HowToJoin({ serverIp }: { serverIp: string }) {
+export function HowToJoin({
+  serverIp,
+  howToJoin,
+  serverName = 'Reverie SMP',
+}: {
+  serverIp?: string
+  howToJoin?: HowToJoinSettings
+  serverName?: string
+}) {
   const [activeTab, setActiveTab] = useState<'java' | 'bedrock'>('java')
   const [copiedKey, setCopiedKey] = useState<string | null>(null)
 
-  const javaIp = serverIp || 'play.reveriesmp.net'
-  const bedrockIp = serverIp || 'play.reveriesmp.net'
-  const bedrockPort = '19132'
+  const javaIp = howToJoin?.javaIp || serverIp || 'play.reveriesmp.net'
+  const bedrockIp = howToJoin?.bedrockIp || serverIp || 'play.reveriesmp.net'
+  const bedrockPort = howToJoin?.bedrockPort || '19132'
+  const javaVersion = howToJoin?.javaVersion || '1.20 - 1.21.x'
+  const bedrockVersion = howToJoin?.bedrockVersion || 'Latest'
 
   const copyToClipboard = async (text: string, key: string, label: string) => {
     try {
@@ -78,7 +89,7 @@ export function HowToJoin({ serverIp }: { serverIp: string }) {
             <ol className="flex flex-col gap-2.5 text-xs text-muted-foreground">
               <li className="flex items-start gap-2.5 rounded-lg border border-border/60 bg-secondary/30 p-2.5">
                 <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 font-bold text-primary text-[10px]">1</span>
-                <span>Launch Minecraft: Java Edition (Recommended versions: <strong className="text-foreground">1.20 - 1.21.x</strong>).</span>
+                <span>Launch Minecraft: Java Edition (Recommended versions: <strong className="text-foreground">{javaVersion}</strong>).</span>
               </li>
               <li className="flex items-start gap-2.5 rounded-lg border border-border/60 bg-secondary/30 p-2.5">
                 <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 font-bold text-primary text-[10px]">2</span>
@@ -86,7 +97,7 @@ export function HowToJoin({ serverIp }: { serverIp: string }) {
               </li>
               <li className="flex items-start gap-2.5 rounded-lg border border-border/60 bg-secondary/30 p-2.5">
                 <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 font-bold text-primary text-[10px]">3</span>
-                <span>Enter Server Name as <strong className="text-foreground">Reverie SMP</strong> and paste the IP below.</span>
+                <span>Enter Server Name as <strong className="text-foreground">{serverName}</strong> and paste the IP below.</span>
               </li>
               <li className="flex items-start gap-2.5 rounded-lg border border-border/60 bg-secondary/30 p-2.5">
                 <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 font-bold text-primary text-[10px]">4</span>

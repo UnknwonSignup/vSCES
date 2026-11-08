@@ -12,7 +12,7 @@ import {
   Sparkles,
   Type,
 } from 'lucide-react'
-import { saveLogoAction } from '@/app/actions/admin'
+import { saveLogoAction, resetLogoAction } from '@/app/actions/admin'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -31,15 +31,15 @@ type Preset = {
 
 const PRESETS: Preset[] = [
   {
-    id: 'reverie',
-    name: 'Amethyst (Reverie)',
-    topColor: '#ffffff',
-    midColor: '#c084fc',
-    bottomColor: '#7e22ce',
-    sideColor: '#3b0764',
-    outlineColor: '#120524',
-    glowColor: '#a855f7',
-    subColor: '#e9d5ff',
+    id: 'reverie-exact',
+    name: '💖 Reverie SMP (Exact)',
+    topColor: '#ff54c9',
+    midColor: '#d91a8e',
+    bottomColor: '#800b58',
+    sideColor: '#2b031d',
+    outlineColor: '#000000',
+    glowColor: '#ff4bb4',
+    subColor: '#f4f4f5',
   },
   {
     id: 'gold',
@@ -48,29 +48,29 @@ const PRESETS: Preset[] = [
     midColor: '#fbbf24',
     bottomColor: '#b45309',
     sideColor: '#451a03',
-    outlineColor: '#1c0a00',
+    outlineColor: '#000000',
     glowColor: '#f59e0b',
     subColor: '#fef3c7',
   },
   {
     id: 'diamond',
-    name: 'Diamond Ice',
+    name: 'Diamond Crystal',
     topColor: '#f0fdfa',
     midColor: '#38bdf8',
     bottomColor: '#0369a1',
     sideColor: '#082f49',
-    outlineColor: '#02131e',
+    outlineColor: '#000000',
     glowColor: '#0284c7',
     subColor: '#bae6fd',
   },
   {
     id: 'crimson',
-    name: 'Nether Crimson',
+    name: 'Nether Magma',
     topColor: '#fff1f2',
     midColor: '#f87171',
     bottomColor: '#b91c1c',
     sideColor: '#450a0a',
-    outlineColor: '#1c0202',
+    outlineColor: '#000000',
     glowColor: '#ef4444',
     subColor: '#fecaca',
   },
@@ -81,18 +81,18 @@ const PRESETS: Preset[] = [
     midColor: '#34d399',
     bottomColor: '#047857',
     sideColor: '#022c22',
-    outlineColor: '#01140f',
+    outlineColor: '#000000',
     glowColor: '#10b981',
     subColor: '#a7f3d0',
   },
   {
     id: 'midnight',
-    name: 'Midnight Neon',
+    name: 'The End Void',
     topColor: '#ffffff',
     midColor: '#818cf8',
     bottomColor: '#4338ca',
     sideColor: '#1e1b4b',
-    outlineColor: '#09081f',
+    outlineColor: '#000000',
     glowColor: '#6366f1',
     subColor: '#c7d2fe',
   },
@@ -108,23 +108,24 @@ export function LogoMaker() {
   const [showSub, setShowSub] = useState(true)
 
   // Styling inputs
-  const [selectedPreset, setSelectedPreset] = useState('reverie')
-  const [fontFamily, setFontFamily] = useState('Impact')
+  const [selectedPreset, setSelectedPreset] = useState('reverie-exact')
+  const [fontFamily, setFontFamily] = useState('Minecraftia')
   const [fontSize, setFontSize] = useState(130)
-  const [depth, setDepth] = useState(20)
-  const [depthAngle, setDepthAngle] = useState(65) // degrees
-  const [outlineWidth, setOutlineWidth] = useState(12)
-  const [glowSize, setGlowSize] = useState(30)
+  const [depth, setDepth] = useState(24)
+  const [depthAngle, setDepthAngle] = useState(90) // 90 = straight down Minecraft block extrusion
+  const [outlineWidth, setOutlineWidth] = useState(14)
+  const [glowSize, setGlowSize] = useState(24)
   const [darkBackground, setDarkBackground] = useState(true)
+  const [enableCracks, setEnableCracks] = useState(true)
 
   // Colors
-  const [topColor, setTopColor] = useState('#ffffff')
-  const [midColor, setMidColor] = useState('#c084fc')
-  const [bottomColor, setBottomColor] = useState('#7e22ce')
-  const [sideColor, setSideColor] = useState('#3b0764')
-  const [outlineColor, setOutlineColor] = useState('#120524')
-  const [glowColor, setGlowColor] = useState('#a855f7')
-  const [subColor, setSubColor] = useState('#e9d5ff')
+  const [topColor, setTopColor] = useState('#ff54c9')
+  const [midColor, setMidColor] = useState('#d91a8e')
+  const [bottomColor, setBottomColor] = useState('#800b58')
+  const [sideColor, setSideColor] = useState('#2b031d')
+  const [outlineColor, setOutlineColor] = useState('#000000')
+  const [glowColor, setGlowColor] = useState('#ff4bb4')
+  const [subColor, setSubColor] = useState('#f4f4f5')
 
   // Apply preset
   const applyPreset = (preset: Preset) => {
@@ -167,9 +168,10 @@ export function LogoMaker() {
     const stepY = Math.sin(rad)
 
     // 1. Draw Glow behind the text
+    const mainFont = `900 ${fontSize}px '${fontFamily}', 'Press Start 2P', Impact, sans-serif`
     if (glowSize > 0) {
       ctx.save()
-      ctx.font = `900 ${fontSize}px ${fontFamily}, "Arial Black", sans-serif`
+      ctx.font = mainFont
       ctx.shadowColor = glowColor
       ctx.shadowBlur = glowSize
       ctx.fillStyle = glowColor
@@ -178,9 +180,9 @@ export function LogoMaker() {
     }
 
     // 2. Draw 3D Extrusion Side Layers (from back to front)
-    ctx.font = `900 ${fontSize}px ${fontFamily}, "Arial Black", sans-serif`
+    ctx.font = mainFont
     ctx.lineJoin = 'miter'
-    ctx.miterLimit = 2
+    ctx.miterLimit = 3
 
     for (let i = depth; i >= 1; i--) {
       const ox = stepX * i
@@ -188,7 +190,7 @@ export function LogoMaker() {
       const ratio = i / depth
 
       // Side stroke for solid extrusion volume
-      ctx.lineWidth = outlineWidth
+      ctx.lineWidth = outlineWidth + 2
       ctx.strokeStyle = outlineColor
       ctx.strokeText(title, centerX + ox, centerY + oy)
 
@@ -197,8 +199,8 @@ export function LogoMaker() {
       ctx.fillText(title, centerX + ox, centerY + oy)
 
       // Add a dark shade layer on deep parts
-      if (ratio > 0.4) {
-        ctx.fillStyle = `rgba(0, 0, 0, ${ratio * 0.45})`
+      if (ratio > 0.3) {
+        ctx.fillStyle = `rgba(0, 0, 0, ${ratio * 0.5})`
         ctx.fillText(title, centerX + ox, centerY + oy)
       }
     }
@@ -212,55 +214,102 @@ export function LogoMaker() {
     const gradient = ctx.createLinearGradient(0, centerY - fontSize * 0.55, 0, centerY + fontSize * 0.45)
     gradient.addColorStop(0, topColor)
     gradient.addColorStop(0.35, midColor)
-    gradient.addColorStop(0.85, bottomColor)
+    gradient.addColorStop(0.75, bottomColor)
     gradient.addColorStop(1, sideColor)
 
     ctx.fillStyle = gradient
     ctx.fillText(title, centerX, centerY)
 
-    // 5. Specular Inner Highlight / Bevel shine
+    // 5. Minecraft Block Cracks & Facets Overlay
+    if (enableCracks) {
+      ctx.save()
+      // Draw pixel block seams and crack notches
+      ctx.lineWidth = 2
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.45)'
+
+      const textWidth = ctx.measureText(title).width
+      const startX = centerX - textWidth / 2
+      const step = Math.max(16, fontSize * 0.22)
+
+      for (let x = startX + 10; x < centerX + textWidth / 2; x += step) {
+        ctx.beginPath()
+        ctx.moveTo(x, centerY - fontSize * 0.35)
+        ctx.lineTo(x + 4, centerY - fontSize * 0.15)
+        ctx.lineTo(x - 2, centerY + fontSize * 0.2)
+        ctx.stroke()
+
+        // Highlight glint next to crack
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)'
+        ctx.beginPath()
+        ctx.moveTo(x + 1, centerY - fontSize * 0.35)
+        ctx.lineTo(x + 5, centerY - fontSize * 0.15)
+        ctx.stroke()
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.45)'
+      }
+      ctx.restore()
+    }
+
+    // 6. Specular Inner Bevel shine
     ctx.lineWidth = Math.max(1.5, outlineWidth * 0.2)
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)'
     ctx.strokeText(title, centerX, centerY)
 
-    // 6. Subtitle (e.g. "SMP")
+    // 7. Subtitle (e.g. "SMP") — Minecraft Quartz Block Style
     if (showSub && subText.trim()) {
       const sub = subText.trim().toUpperCase()
-      const subY = centerY + fontSize * 0.58 + 24
-      const subSize = Math.max(24, Math.round(fontSize * 0.32))
+      const subSize = Math.max(28, Math.round(fontSize * 0.42))
+      const subY = centerY + fontSize * 0.42 // Overlaps bottom of main title like in Image 2
+      const subFont = `900 ${subSize}px '${fontFamily}', 'Press Start 2P', Impact, sans-serif`
 
-      ctx.font = `900 ${subSize}px ${fontFamily}, "Arial Black", sans-serif`
+      ctx.font = subFont
 
       // 3D side for subtitle
-      const subDepth = Math.max(4, Math.round(depth * 0.45))
+      const subDepth = Math.max(6, Math.round(depth * 0.55))
       for (let s = subDepth; s >= 1; s--) {
         const sox = stepX * s
         const soy = stepY * s
-        ctx.lineWidth = Math.max(4, outlineWidth * 0.5)
-        ctx.strokeStyle = outlineColor
+        ctx.lineWidth = Math.max(8, outlineWidth * 0.7)
+        ctx.strokeStyle = '#000000'
         ctx.strokeText(sub, centerX + sox, subY + soy)
 
-        ctx.fillStyle = sideColor
+        ctx.fillStyle = '#18181b' // Deep obsidian / blackstone
         ctx.fillText(sub, centerX + sox, subY + soy)
       }
 
       // Subtitle Front Outline
-      ctx.lineWidth = Math.max(4, outlineWidth * 0.5)
-      ctx.strokeStyle = outlineColor
+      ctx.lineWidth = Math.max(8, outlineWidth * 0.7)
+      ctx.strokeStyle = '#000000'
       ctx.strokeText(sub, centerX, subY)
 
-      // Subtitle Front Gradient
+      // Subtitle Front Gradient (Quartz / Iron block gradient matching image 2)
       const subGrad = ctx.createLinearGradient(0, subY - subSize * 0.5, 0, subY + subSize * 0.5)
       subGrad.addColorStop(0, '#ffffff')
-      subGrad.addColorStop(0.4, subColor)
-      subGrad.addColorStop(1, bottomColor)
+      subGrad.addColorStop(0.3, subColor || '#e4e4e7')
+      subGrad.addColorStop(0.7, '#a1a1aa')
+      subGrad.addColorStop(1, '#52525b')
 
       ctx.fillStyle = subGrad
       ctx.fillText(sub, centerX, subY)
 
+      // Subtitle block cracks
+      if (enableCracks) {
+        ctx.save()
+        ctx.lineWidth = 1.5
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)'
+        const subW = ctx.measureText(sub).width
+        const sStartX = centerX - subW / 2
+        for (let sx = sStartX + 12; sx < centerX + subW / 2; sx += 24) {
+          ctx.beginPath()
+          ctx.moveTo(sx, subY - subSize * 0.25)
+          ctx.lineTo(sx + 3, subY)
+          ctx.stroke()
+        }
+        ctx.restore()
+      }
+
       // Subtitle inner shine
       ctx.lineWidth = 1.2
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)'
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
       ctx.strokeText(sub, centerX, subY)
     }
 
@@ -275,6 +324,7 @@ export function LogoMaker() {
     depthAngle,
     outlineWidth,
     glowSize,
+    enableCracks,
     topColor,
     midColor,
     bottomColor,
@@ -318,19 +368,41 @@ export function LogoMaker() {
     })
   }
 
+  // Reset to default original logo
+  const handleResetToDefaultLogo = () => {
+    startTransition(async () => {
+      const res = await resetLogoAction()
+      if (res?.ok) {
+        toast.success(res.message)
+      } else {
+        toast.error('Failed to reset logo')
+      }
+    })
+  }
+
   return (
     <div className="space-y-6">
       {/* Header Info */}
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <Sparkles className="size-5 text-primary" /> 3D Text &amp; Logo Maker
+            <Sparkles className="size-5 text-primary" /> 3D Minecraft Title Maker
           </h2>
           <p className="text-xs text-muted-foreground">
-            Generate high-res 3D Minecraft server title logos. Download as transparent PNG or apply directly as your site logo.
+            Generate authentic 3D Minecraft server title logos. Download as transparent PNG or apply directly to your live site.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={isPending}
+            onClick={handleResetToDefaultLogo}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-destructive"
+          >
+            <RefreshCw className="size-3.5" /> Reset Default Logo
+          </Button>
           <Button
             type="button"
             variant="outline"
@@ -492,14 +564,26 @@ export function LogoMaker() {
                   id="logo-font"
                   value={fontFamily}
                   onChange={(e) => setFontFamily(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-xs ring-offset-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-xs ring-offset-background focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring font-bold"
                 >
-                  <option value="Impact">Impact (Classic Bold)</option>
-                  <option value="Arial Black">Arial Black (Wide)</option>
-                  <option value="Trebuchet MS">Trebuchet MS</option>
-                  <option value="system-ui">System UI (Modern)</option>
-                  <option value="Courier New">Monospace (Blocky)</option>
+                  <option value="Minecraftia">⛏️ Minecraftia (Authentic Blocky)</option>
+                  <option value="Impact">Impact (Bold Stretched)</option>
+                  <option value="Arial Black">Arial Black (Wide Heavy)</option>
+                  <option value="Courier New">Monospace (Retro Pixel)</option>
                 </select>
+              </div>
+
+              <div className="col-span-2 flex items-center justify-between border-t border-border/60 pt-2">
+                <label className="flex items-center gap-2 text-xs font-semibold text-foreground cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={enableCracks}
+                    onChange={(e) => setEnableCracks(e.target.checked)}
+                    className="size-3.5 rounded border-border accent-primary"
+                  />
+                  <span>Minecraft Block Cracks &amp; Facet Seams</span>
+                </label>
+                <span className="text-[10px] text-muted-foreground">Matches Image Texture</span>
               </div>
 
               <div className="flex flex-col gap-1.5">
