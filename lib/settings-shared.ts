@@ -299,11 +299,6 @@ export function normalizeSettings(input: unknown): SiteSettings {
       })) ?? d.featuresList,
   }
 }
-        icon: str(i.icon, 'sparkles', 40),
-        color: str(i.color, 'purple', 40),
-      })) ?? d.featuresList,
-  }
-}
 
 export function safeUrl(url: string) {
   return /^https?:\/\//i.test(url) ? url : ''
