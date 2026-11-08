@@ -186,260 +186,413 @@ export function SettingsEditor({ settings }: { settings: SiteSettings }) {
           </div>
         </Card>
 
-        {/* Server Highlights Badges (Image 3) */}
-        <Card
-          title="Server Highlights Ribbon (4 Badges)"
-          description="The 4 highlight badges shown directly under the hero section on the homepage."
-        >
-          <div className="grid gap-4 md:grid-cols-2">
-            {(s.highlightBadges ?? []).map((badge, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col gap-3 rounded-xl border border-border bg-secondary/40 p-4"
-              >
-                <div className="flex items-center justify-between border-b border-border/60 pb-2">
-                  <span className="text-xs font-bold text-primary">Badge #{idx + 1}</span>
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={badge.color}
-                      onChange={(e) => {
-                        const next = [...(s.highlightBadges ?? [])]
-                        next[idx] = { ...next[idx], color: e.target.value }
-                        set('highlightBadges', next)
-                      }}
-                      className="rounded border border-border bg-card px-2 py-1 text-xs"
-                    >
-                      <option value="purple">Purple</option>
-                      <option value="emerald">Emerald</option>
-                      <option value="blue">Blue</option>
-                      <option value="amber">Amber</option>
-                      <option value="rose">Rose</option>
-                      <option value="cyan">Cyan</option>
-                    </select>
-
-                    <select
-                      value={badge.icon}
-                      onChange={(e) => {
-                        const next = [...(s.highlightBadges ?? [])]
-                        next[idx] = { ...next[idx], icon: e.target.value }
-                        set('highlightBadges', next)
-                      }}
-                      className="rounded border border-border bg-card px-2 py-1 text-xs"
-                    >
-                      <option value="sparkles">Sparkles</option>
-                      <option value="shield">Shield</option>
-                      <option value="users">Users</option>
-                      <option value="trophy">Trophy</option>
-                      <option value="swords">Swords</option>
-                      <option value="coins">Coins</option>
-                      <option value="compass">Compass</option>
-                      <option value="star">Star</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid gap-2">
-                  <Field
-                    label="Title"
-                    id={`badge-label-${idx}`}
-                    value={badge.label}
-                    onChange={(e) => {
-                      const next = [...(s.highlightBadges ?? [])]
-                      next[idx] = { ...next[idx], label: e.target.value }
-                      set('highlightBadges', next)
-                    }}
-                  />
-                  <Field
-                    label="Description"
-                    id={`badge-desc-${idx}`}
-                    value={badge.desc}
-                    onChange={(e) => {
-                      const next = [...(s.highlightBadges ?? [])]
-                      next[idx] = { ...next[idx], desc: e.target.value }
-                      set('highlightBadges', next)
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-
         {/* Connection Guide (Java & Bedrock) */}
         <Card
           title="Connection Guide ('How to Join')"
-          description="Customize the server IPs, Bedrock port, and version recommendations on the interactive guide."
+          description="Enable or disable platforms (like turning off Bedrock if you are Java-only), and configure server connection details."
         >
-          <div className="grid gap-4 md:grid-cols-2">
-            <Field
-              label="Java Server IP"
-              id="guideJavaIp"
-              value={s.howToJoin?.javaIp ?? s.serverIp}
-              onChange={(e) =>
-                set('howToJoin', {
-                  ...(s.howToJoin ?? {
-                    javaIp: s.serverIp,
-                    bedrockIp: s.serverIp,
-                    bedrockPort: '19132',
-                    javaVersion: '1.20 - 1.21.x',
-                    bedrockVersion: 'Latest',
-                  }),
-                  javaIp: e.target.value,
-                })
-              }
-              hint="IP copied by PC / Java players"
-            />
-            <Field
-              label="Bedrock Server IP"
-              id="guideBedrockIp"
-              value={s.howToJoin?.bedrockIp ?? s.serverIp}
-              onChange={(e) =>
-                set('howToJoin', {
-                  ...(s.howToJoin ?? {
-                    javaIp: s.serverIp,
-                    bedrockIp: s.serverIp,
-                    bedrockPort: '19132',
-                    javaVersion: '1.20 - 1.21.x',
-                    bedrockVersion: 'Latest',
-                  }),
-                  bedrockIp: e.target.value,
-                })
-              }
-              hint="IP for Mobile / Console / Win10"
-            />
-            <Field
-              label="Bedrock Port"
-              id="guideBedrockPort"
-              value={s.howToJoin?.bedrockPort ?? '19132'}
-              onChange={(e) =>
-                set('howToJoin', {
-                  ...(s.howToJoin ?? {
-                    javaIp: s.serverIp,
-                    bedrockIp: s.serverIp,
-                    bedrockPort: '19132',
-                    javaVersion: '1.20 - 1.21.x',
-                    bedrockVersion: 'Latest',
-                  }),
-                  bedrockPort: e.target.value,
-                })
-              }
-              hint="Usually 19132"
-            />
-            <Field
-              label="Recommended Java Version"
-              id="guideJavaVer"
-              value={s.howToJoin?.javaVersion ?? '1.20 - 1.21.x'}
-              onChange={(e) =>
-                set('howToJoin', {
-                  ...(s.howToJoin ?? {
-                    javaIp: s.serverIp,
-                    bedrockIp: s.serverIp,
-                    bedrockPort: '19132',
-                    javaVersion: '1.20 - 1.21.x',
-                    bedrockVersion: 'Latest',
-                  }),
-                  javaVersion: e.target.value,
-                })
-              }
-              hint="e.g. 1.20 - 1.21.x"
-            />
+          <div className="flex flex-col gap-5">
+            {/* Master and Platform Toggles */}
+            <div className="grid gap-3 sm:grid-cols-3 rounded-xl border border-border/70 bg-secondary/30 p-4">
+              <div className="flex items-center justify-between sm:flex-col sm:items-start gap-2">
+                <div>
+                  <span className="text-xs font-bold text-foreground">Connection Guide</span>
+                  <p className="text-[11px] text-muted-foreground">Show guide on homepage</p>
+                </div>
+                <Switch
+                  checked={s.howToJoin?.enabled !== false && s.features.howToJoin !== false}
+                  onCheckedChange={(val) => {
+                    set('howToJoin', { ...(s.howToJoin ?? DEFAULT_SETTINGS.howToJoin), enabled: val })
+                    set('features', { ...s.features, howToJoin: val })
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center justify-between sm:flex-col sm:items-start gap-2 border-t sm:border-t-0 sm:border-l border-border/60 pt-2 sm:pt-0 sm:pl-4">
+                <div>
+                  <span className="text-xs font-bold text-foreground">Java Edition (PC)</span>
+                  <p className="text-[11px] text-muted-foreground">Show Java IP & steps</p>
+                </div>
+                <Switch
+                  checked={s.howToJoin?.showJava !== false}
+                  onCheckedChange={(val) =>
+                    set('howToJoin', { ...(s.howToJoin ?? DEFAULT_SETTINGS.howToJoin), showJava: val })
+                  }
+                />
+              </div>
+
+              <div className="flex items-center justify-between sm:flex-col sm:items-start gap-2 border-t sm:border-t-0 sm:border-l border-border/60 pt-2 sm:pt-0 sm:pl-4">
+                <div>
+                  <span className="text-xs font-bold text-foreground">Bedrock (Mobile/Console)</span>
+                  <p className="text-[11px] text-muted-foreground">Show Bedrock IP & port</p>
+                </div>
+                <Switch
+                  checked={s.howToJoin?.showBedrock !== false}
+                  onCheckedChange={(val) =>
+                    set('howToJoin', { ...(s.howToJoin ?? DEFAULT_SETTINGS.howToJoin), showBedrock: val })
+                  }
+                />
+              </div>
+            </div>
+
+            {/* IP and Port Inputs */}
+            <div className="grid gap-4 md:grid-cols-2">
+              <Field
+                label="Java Server IP"
+                id="guideJavaIp"
+                value={s.howToJoin?.javaIp ?? s.serverIp}
+                onChange={(e) =>
+                  set('howToJoin', {
+                    ...(s.howToJoin ?? DEFAULT_SETTINGS.howToJoin),
+                    javaIp: e.target.value,
+                  })
+                }
+                hint="IP copied by PC / Java players"
+              />
+              <Field
+                label="Recommended Java Version"
+                id="guideJavaVer"
+                value={s.howToJoin?.javaVersion ?? '1.20 - 1.21.x'}
+                onChange={(e) =>
+                  set('howToJoin', {
+                    ...(s.howToJoin ?? DEFAULT_SETTINGS.howToJoin),
+                    javaVersion: e.target.value,
+                  })
+                }
+                hint="e.g. 1.20 - 1.21.x"
+              />
+              <Field
+                label="Bedrock Server IP"
+                id="guideBedrockIp"
+                value={s.howToJoin?.bedrockIp ?? s.serverIp}
+                onChange={(e) =>
+                  set('howToJoin', {
+                    ...(s.howToJoin ?? DEFAULT_SETTINGS.howToJoin),
+                    bedrockIp: e.target.value,
+                  })
+                }
+                hint="IP for Mobile / Console / Win10"
+              />
+              <Field
+                label="Bedrock Port"
+                id="guideBedrockPort"
+                value={s.howToJoin?.bedrockPort ?? '19132'}
+                onChange={(e) =>
+                  set('howToJoin', {
+                    ...(s.howToJoin ?? DEFAULT_SETTINGS.howToJoin),
+                    bedrockPort: e.target.value,
+                  })
+                }
+                hint="Default is 19132"
+              />
+            </div>
+          </div>
+        </Card>
+
+        {/* Server Highlights Badges (Image 3) */}
+        <Card
+          title="Server Highlights Ribbon (Badges)"
+          description="Highlight badges shown directly below the hero section. Toggle individual badges on/off, delete them, or add custom ones."
+        >
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between rounded-xl border border-border/70 bg-secondary/30 p-3">
+              <div>
+                <span className="text-xs font-bold text-foreground">Highlights Ribbon</span>
+                <p className="text-[11px] text-muted-foreground">Show or hide the entire badges section on the homepage</p>
+              </div>
+              <Switch
+                checked={s.features.highlightBadges !== false}
+                onCheckedChange={(val) => set('features', { ...s.features, highlightBadges: val })}
+              />
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              {(s.highlightBadges ?? []).map((badge, idx) => (
+                <div
+                  key={badge.id || idx}
+                  className={`flex flex-col gap-3 rounded-xl border p-4 transition-all ${
+                    badge.enabled !== false
+                      ? 'border-border/80 bg-secondary/40'
+                      : 'border-border/40 bg-secondary/15 opacity-60'
+                  }`}
+                >
+                  <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={badge.enabled !== false}
+                        onCheckedChange={(val) => {
+                          const next = [...(s.highlightBadges ?? [])]
+                          next[idx] = { ...next[idx], enabled: val }
+                          set('highlightBadges', next)
+                        }}
+                      />
+                      <span className="text-xs font-bold text-foreground">
+                        Badge #{idx + 1} {badge.enabled === false && <span className="text-muted-foreground font-normal">(Hidden)</span>}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={badge.color}
+                        onChange={(e) => {
+                          const next = [...(s.highlightBadges ?? [])]
+                          next[idx] = { ...next[idx], color: e.target.value }
+                          set('highlightBadges', next)
+                        }}
+                        className="rounded border border-border bg-card px-2 py-1 text-xs"
+                      >
+                        <option value="purple">Purple</option>
+                        <option value="emerald">Emerald</option>
+                        <option value="blue">Blue</option>
+                        <option value="amber">Amber</option>
+                        <option value="rose">Rose</option>
+                        <option value="cyan">Cyan</option>
+                      </select>
+
+                      <select
+                        value={badge.icon}
+                        onChange={(e) => {
+                          const next = [...(s.highlightBadges ?? [])]
+                          next[idx] = { ...next[idx], icon: e.target.value }
+                          set('highlightBadges', next)
+                        }}
+                        className="rounded border border-border bg-card px-2 py-1 text-xs"
+                      >
+                        <option value="sparkles">Sparkles</option>
+                        <option value="shield">Shield</option>
+                        <option value="users">Users</option>
+                        <option value="trophy">Trophy</option>
+                        <option value="swords">Swords</option>
+                        <option value="coins">Coins</option>
+                        <option value="compass">Compass</option>
+                        <option value="star">Star</option>
+                      </select>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = (s.highlightBadges ?? []).filter((_, i) => i !== idx)
+                          set('highlightBadges', next)
+                        }}
+                        title="Delete badge"
+                        className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Field
+                      label="Title"
+                      id={`badge-label-${idx}`}
+                      value={badge.label}
+                      onChange={(e) => {
+                        const next = [...(s.highlightBadges ?? [])]
+                        next[idx] = { ...next[idx], label: e.target.value }
+                        set('highlightBadges', next)
+                      }}
+                    />
+                    <Field
+                      label="Description"
+                      id={`badge-desc-${idx}`}
+                      value={badge.desc}
+                      onChange={(e) => {
+                        const next = [...(s.highlightBadges ?? [])]
+                        next[idx] = { ...next[idx], desc: e.target.value }
+                        set('highlightBadges', next)
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const next = [
+                  ...(s.highlightBadges ?? []),
+                  {
+                    id: 'badge-' + Date.now(),
+                    label: 'New Highlight',
+                    desc: 'Short perk description',
+                    icon: 'sparkles',
+                    color: 'purple',
+                    enabled: true,
+                  },
+                ]
+                set('highlightBadges', next)
+              }}
+              className="w-full sm:w-auto self-start mt-1 gap-1.5"
+            >
+              <Plus className="size-4" /> Add New Badge
+            </Button>
           </div>
         </Card>
 
         {/* Why Play Feature Cards */}
         <Card
-          title="Why Play Feature Cards (6 Cards)"
-          description="Customize the 6 feature showcase cards shown on the homepage."
+          title="Why Play Feature Cards"
+          description="Feature showcase cards displayed on the homepage. Toggle individual cards on/off, delete them, or add new ones."
         >
-          <div className="grid gap-4 md:grid-cols-2">
-            {(s.featuresList ?? []).map((feat, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col gap-3 rounded-xl border border-border bg-secondary/40 p-4"
-              >
-                <div className="flex items-center justify-between border-b border-border/60 pb-2">
-                  <span className="text-xs font-bold text-primary">Feature #{idx + 1}</span>
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={feat.color}
-                      onChange={(e) => {
-                        const next = [...(s.featuresList ?? [])]
-                        next[idx] = { ...next[idx], color: e.target.value }
-                        set('featuresList', next)
-                      }}
-                      className="rounded border border-border bg-card px-2 py-1 text-xs"
-                    >
-                      <option value="emerald">Emerald</option>
-                      <option value="amber">Amber</option>
-                      <option value="purple">Purple</option>
-                      <option value="rose">Rose</option>
-                      <option value="blue">Blue</option>
-                      <option value="cyan">Cyan</option>
-                    </select>
-
-                    <select
-                      value={feat.icon}
-                      onChange={(e) => {
-                        const next = [...(s.featuresList ?? [])]
-                        next[idx] = { ...next[idx], icon: e.target.value }
-                        set('featuresList', next)
-                      }}
-                      className="rounded border border-border bg-card px-2 py-1 text-xs"
-                    >
-                      <option value="shield">Shield</option>
-                      <option value="coins">Coins</option>
-                      <option value="sparkles">Sparkles</option>
-                      <option value="swords">Swords</option>
-                      <option value="compass">Compass</option>
-                      <option value="smartphone">Smartphone</option>
-                      <option value="users">Users</option>
-                      <option value="trophy">Trophy</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid gap-2">
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="col-span-2">
-                      <Field
-                        label="Card Title"
-                        id={`feat-title-${idx}`}
-                        value={feat.title}
-                        onChange={(e) => {
-                          const next = [...(s.featuresList ?? [])]
-                          next[idx] = { ...next[idx], title: e.target.value }
-                          set('featuresList', next)
-                        }}
-                      />
-                    </div>
-                    <div>
-                      <Field
-                        label="Tag / Pill"
-                        id={`feat-tag-${idx}`}
-                        value={feat.tag}
-                        onChange={(e) => {
-                          const next = [...(s.featuresList ?? [])]
-                          next[idx] = { ...next[idx], tag: e.target.value }
-                          set('featuresList', next)
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <Field
-                    label="Description"
-                    id={`feat-desc-${idx}`}
-                    textarea
-                    rows={2}
-                    value={feat.description}
-                    onChange={(e) => {
-                      const next = [...(s.featuresList ?? [])]
-                      next[idx] = { ...next[idx], description: e.target.value }
-                      set('featuresList', next)
-                    }}
-                  />
-                </div>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between rounded-xl border border-border/70 bg-secondary/30 p-3">
+              <div>
+                <span className="text-xs font-bold text-foreground">Why Play Showcase</span>
+                <p className="text-[11px] text-muted-foreground">Show or hide the entire showcase section on the homepage</p>
               </div>
-            ))}
+              <Switch
+                checked={s.features.featuresList !== false}
+                onCheckedChange={(val) => set('features', { ...s.features, featuresList: val })}
+              />
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              {(s.featuresList ?? []).map((feat, idx) => (
+                <div
+                  key={feat.id || idx}
+                  className={`flex flex-col gap-3 rounded-xl border p-4 transition-all ${
+                    feat.enabled !== false
+                      ? 'border-border/80 bg-secondary/40'
+                      : 'border-border/40 bg-secondary/15 opacity-60'
+                  }`}
+                >
+                  <div className="flex items-center justify-between border-b border-border/50 pb-2">
+                    <div className="flex items-center gap-2">
+                      <Switch
+                        checked={feat.enabled !== false}
+                        onCheckedChange={(val) => {
+                          const next = [...(s.featuresList ?? [])]
+                          next[idx] = { ...next[idx], enabled: val }
+                          set('featuresList', next)
+                        }}
+                      />
+                      <span className="text-xs font-bold text-foreground">
+                        Feature #{idx + 1} {feat.enabled === false && <span className="text-muted-foreground font-normal">(Hidden)</span>}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <select
+                        value={feat.color}
+                        onChange={(e) => {
+                          const next = [...(s.featuresList ?? [])]
+                          next[idx] = { ...next[idx], color: e.target.value }
+                          set('featuresList', next)
+                        }}
+                        className="rounded border border-border bg-card px-2 py-1 text-xs"
+                      >
+                        <option value="emerald">Emerald</option>
+                        <option value="amber">Amber</option>
+                        <option value="purple">Purple</option>
+                        <option value="rose">Rose</option>
+                        <option value="blue">Blue</option>
+                        <option value="cyan">Cyan</option>
+                      </select>
+
+                      <select
+                        value={feat.icon}
+                        onChange={(e) => {
+                          const next = [...(s.featuresList ?? [])]
+                          next[idx] = { ...next[idx], icon: e.target.value }
+                          set('featuresList', next)
+                        }}
+                        className="rounded border border-border bg-card px-2 py-1 text-xs"
+                      >
+                        <option value="shield">Shield</option>
+                        <option value="coins">Coins</option>
+                        <option value="sparkles">Sparkles</option>
+                        <option value="swords">Swords</option>
+                        <option value="compass">Compass</option>
+                        <option value="smartphone">Smartphone</option>
+                        <option value="users">Users</option>
+                        <option value="trophy">Trophy</option>
+                      </select>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = (s.featuresList ?? []).filter((_, i) => i !== idx)
+                          set('featuresList', next)
+                        }}
+                        title="Delete feature card"
+                        className="rounded p-1 text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="grid gap-2">
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="col-span-2">
+                        <Field
+                          label="Card Title"
+                          id={`feat-title-${idx}`}
+                          value={feat.title}
+                          onChange={(e) => {
+                            const next = [...(s.featuresList ?? [])]
+                            next[idx] = { ...next[idx], title: e.target.value }
+                            set('featuresList', next)
+                          }}
+                        />
+                      </div>
+                      <div>
+                        <Field
+                          label="Tag / Pill"
+                          id={`feat-tag-${idx}`}
+                          value={feat.tag}
+                          onChange={(e) => {
+                            const next = [...(s.featuresList ?? [])]
+                            next[idx] = { ...next[idx], tag: e.target.value }
+                            set('featuresList', next)
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <Field
+                      label="Description"
+                      id={`feat-desc-${idx}`}
+                      textarea
+                      rows={2}
+                      value={feat.description}
+                      onChange={(e) => {
+                        const next = [...(s.featuresList ?? [])]
+                        next[idx] = { ...next[idx], description: e.target.value }
+                        set('featuresList', next)
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const next = [
+                  ...(s.featuresList ?? []),
+                  {
+                    id: 'feat-' + Date.now(),
+                    title: 'New Feature',
+                    tag: 'Feature',
+                    description: 'Description of this server feature.',
+                    icon: 'sparkles',
+                    color: 'purple',
+                    enabled: true,
+                  },
+                ]
+                set('featuresList', next)
+              }}
+              className="w-full sm:w-auto self-start mt-1 gap-1.5"
+            >
+              <Plus className="size-4" /> Add Feature Card
+            </Button>
           </div>
         </Card>
 

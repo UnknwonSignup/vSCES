@@ -63,7 +63,13 @@ const COLOR_MAP: Record<
   },
 }
 
-export function FeaturesShowcase({ featuresList }: { featuresList?: FeatureCard[] }) {
+export function FeaturesShowcase({
+  featuresList,
+  serverName = 'Reverie SMP',
+}: {
+  featuresList?: FeatureCard[]
+  serverName?: string
+}) {
   const items = featuresList && featuresList.length > 0 ? featuresList : [
     {
       icon: 'shield',
@@ -71,6 +77,7 @@ export function FeaturesShowcase({ featuresList }: { featuresList?: FeatureCard[
       description: 'Claim your territory effortlessly with a golden shovel. Trust friends, configure permissions, and build your dream base with 100% protection.',
       tag: 'Anti-Grief',
       color: 'emerald',
+      enabled: true,
     },
     {
       icon: 'coins',
@@ -78,6 +85,7 @@ export function FeaturesShowcase({ featuresList }: { featuresList?: FeatureCard[
       description: 'Create player chest shops, trade in the /ah Auction House, and earn currency through jobs, mining, and farming. Zero pay-to-win mechanics.',
       tag: 'Economy',
       color: 'amber',
+      enabled: true,
     },
     {
       icon: 'sparkles',
@@ -85,6 +93,7 @@ export function FeaturesShowcase({ featuresList }: { featuresList?: FeatureCard[
       description: 'Discover over 50+ unique, balanced custom enchants. Combine enchants, forge legendary tools, and stand out in both PvE dungeons and PvP battles.',
       tag: 'Enchants',
       color: 'purple',
+      enabled: true,
     },
     {
       icon: 'swords',
@@ -92,6 +101,7 @@ export function FeaturesShowcase({ featuresList }: { featuresList?: FeatureCard[
       description: 'Team up with fellow players to conquer instanced dungeons, defeat custom world bosses, and earn exclusive cosmetic rewards and rare crate keys.',
       tag: 'PvE & Bosses',
       color: 'rose',
+      enabled: true,
     },
     {
       icon: 'compass',
@@ -99,6 +109,7 @@ export function FeaturesShowcase({ featuresList }: { featuresList?: FeatureCard[
       description: 'Level up your mcMMO-style stats through everyday actions. Master woodcutting, fishing, archery, and mining to unlock passive abilities.',
       tag: 'Skills',
       color: 'blue',
+      enabled: true,
     },
     {
       icon: 'smartphone',
@@ -106,21 +117,20 @@ export function FeaturesShowcase({ featuresList }: { featuresList?: FeatureCard[
       description: 'Play anywhere, anytime! Full crossplay support allows PC (Java) and Mobile, Console, or Windows 10 (Bedrock) players to explore together seamlessly.',
       tag: 'Crossplay',
       color: 'cyan',
+      enabled: true,
     },
   ]
-  return (
-    <section className="relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 sm:p-8 backdrop-blur-sm shadow-md">
-      {/* Background ambient radial light */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -top-24 right-1/4 h-72 w-72 rounded-full bg-primary/10 blur-3xl"
-      />
 
+  const activeItems = items.filter((i) => i.enabled !== false)
+  if (activeItems.length === 0) return null
+
+  return (
+    <section className="relative overflow-hidden rounded-2xl border border-border/80 bg-card/60 p-6 sm:p-8 backdrop-blur-sm shadow-sm">
       <div className="relative mb-6 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
             <Sparkles className="size-3.5" />
-            <span>Why Play On Reverie?</span>
+            <span>Why Play On {serverName}?</span>
           </div>
           <h2 className="mt-2 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             Crafted for the Ultimate SMP Experience
@@ -132,13 +142,13 @@ export function FeaturesShowcase({ featuresList }: { featuresList?: FeatureCard[
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {items.map((item) => {
+        {activeItems.map((item) => {
           const Icon = ICON_MAP[item.icon] || Sparkles
           const colors = COLOR_MAP[item.color] || COLOR_MAP.purple
           return (
             <div
               key={item.title}
-              className={`group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border bg-gradient-to-b ${colors.gradient} p-5 transition-all duration-300 ${colors.borderHover} hover:-translate-y-1 hover:shadow-lg`}
+              className={`group relative flex flex-col justify-between overflow-hidden rounded-xl border border-border/70 bg-gradient-to-b ${colors.gradient} p-5 transition-all duration-200 ${colors.borderHover} hover:-translate-y-0.5 hover:shadow-md`}
             >
               <div>
                 <div className="flex items-center justify-between">

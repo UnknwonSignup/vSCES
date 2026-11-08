@@ -8,6 +8,7 @@ import { getDiscordSession } from '@/lib/discord-auth'
 import { DiscordConnect } from '@/components/site/discord-connect'
 import { Chatbot } from '@/components/site/chatbot'
 import { ChatbotProvider } from '@/components/site/chatbot-context'
+import { PageTransition } from '@/components/site/page-transition'
 import { cn } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
@@ -46,7 +47,9 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           </div>
           <Hero settings={settings} />
         </div>
-        <main className="mx-auto max-w-6xl px-4 py-10">{children}</main>
+        <main className="mx-auto max-w-6xl px-4 py-10">
+          <PageTransition>{children}</PageTransition>
+        </main>
         <footer className="border-t border-border">
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-6 text-xs text-muted-foreground sm:flex-row">
             <p>

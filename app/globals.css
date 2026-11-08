@@ -151,3 +151,21 @@ iframe[src*="netlify"] {
     opacity: 0.5;
   }
 }
+
+/* Page & route switch transition animations */
+@keyframes pageIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-page-in {
+  animation: pageIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+

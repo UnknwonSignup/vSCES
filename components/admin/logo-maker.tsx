@@ -220,6 +220,15 @@ export function LogoMaker() {
     ctx.fillStyle = gradient
     ctx.fillText(title, centerX, centerY)
 
+    // Inner 3D Bevel highlight on top edge and bottom shadow
+    ctx.save()
+    ctx.lineWidth = 2.5
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)'
+    ctx.strokeText(title, centerX, centerY - 1)
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)'
+    ctx.strokeText(title, centerX, centerY + 2)
+    ctx.restore()
+
     // 5. Minecraft Block Cracks & Facets Overlay
     if (enableCracks) {
       ctx.save()
@@ -335,7 +344,13 @@ export function LogoMaker() {
   ])
 
   useEffect(() => {
-    renderLogo()
+    if (typeof document !== 'undefined' && 'fonts' in document) {
+      document.fonts.ready.then(() => {
+        renderLogo()
+      })
+    } else {
+      renderLogo()
+    }
   }, [renderLogo])
 
   // Download high-resolution PNG
@@ -398,10 +413,12 @@ export function LogoMaker() {
             variant="outline"
             size="sm"
             disabled={isPending}
-            onClick={handleResetToDefaultLogo}
-            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-destructive"
+            onClick={() => {
+              handleResetToDefaultLogo()
+            }}
+            className="flex items-center gap-1.5 text-xs font-semibold border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
           >
-            <RefreshCw className="size-3.5" /> Reset Default Logo
+            <Sparkles className="size-3.5" /> Use Official Reverie 3D Logo
           </Button>
           <Button
             type="button"
@@ -417,7 +434,7 @@ export function LogoMaker() {
             size="sm"
             disabled={isPending}
             onClick={handleSaveAsSiteLogo}
-            className="flex items-center gap-1.5 bg-brand text-xs font-semibold text-primary-foreground shadow-md hover:opacity-95"
+            className="flex items-center gap-1.5 bg-brand text-xs font-semibold text-primary-foreground shadow-sm hover:opacity-95"
           >
             {isPending ? (
               <>

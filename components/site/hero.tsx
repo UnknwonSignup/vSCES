@@ -46,7 +46,7 @@ export async function Hero({ settings }: { settings: SiteSettings }) {
         className="-z-20 object-cover opacity-40"
       />
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-background/40 via-background/60 to-background" />
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,color-mix(in_srgb,var(--primary)_25%,transparent),transparent_65%)]" />
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,color-mix(in_srgb,var(--primary)_10%,transparent),transparent_70%)]" />
       {features.particles && <Particles />}
 
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-8 px-4 py-14 md:py-20 lg:flex-row lg:justify-between">
@@ -59,7 +59,7 @@ export async function Hero({ settings }: { settings: SiteSettings }) {
               className="flex size-11 items-center justify-center overflow-hidden rounded-md transition-transform group-hover:scale-105"
               style={{
                 background: 'linear-gradient(135deg, var(--brand-from), var(--primary) 50%, var(--brand-to))',
-                boxShadow: '0 8px 24px -4px color-mix(in srgb, var(--primary) 45%, transparent)',
+                boxShadow: '0 4px 12px -2px rgba(0, 0, 0, 0.3)',
               }}
             >
               <Server className="size-5 text-white" aria-hidden="true" />
@@ -89,9 +89,9 @@ export async function Hero({ settings }: { settings: SiteSettings }) {
             height={493}
             priority
             unoptimized={Boolean(settings.logoUrl?.startsWith('data:'))}
-            className="h-auto w-72 transition-all duration-300 group-hover:scale-[1.04] md:w-[26rem]"
+            className="h-auto w-72 transition-all duration-300 group-hover:scale-[1.02] md:w-[26rem]"
             style={{
-              filter: `hue-rotate(${hue}) drop-shadow(0 10px 30px color-mix(in srgb, var(--primary) 45%, transparent))`,
+              filter: `hue-rotate(${hue}) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.4))`,
             }}
           />
         </Link>
@@ -107,7 +107,7 @@ export async function Hero({ settings }: { settings: SiteSettings }) {
               className="flex size-11 items-center justify-center rounded-md transition-transform group-hover:scale-105"
               style={{
                 background: 'linear-gradient(135deg, var(--brand-from), var(--primary) 50%, var(--brand-to))',
-                boxShadow: '0 8px 24px -4px color-mix(in srgb, var(--primary) 45%, transparent)',
+                boxShadow: '0 4px 12px -2px rgba(0, 0, 0, 0.3)',
               }}
             >
               <DiscordLogoIcon className="size-5 text-white" />

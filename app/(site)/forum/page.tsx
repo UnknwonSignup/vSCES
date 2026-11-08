@@ -33,7 +33,7 @@ export default async function ForumPage() {
                       <MessagesSquare className="size-5" aria-hidden="true" />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <Link href={`/forum/${c.id}`} className="font-semibold hover:text-primary">
+                      <Link href={`/forum/${c.id}`} prefetch={true} className="font-semibold transition-colors hover:text-primary active:opacity-75">
                         {c.name}
                       </Link>
                       <p className="text-xs text-muted-foreground">{c.description}</p>
@@ -48,7 +48,8 @@ export default async function ForumPage() {
                         <>
                           <Link
                             href={`/forum/topic/${c.latestTopic.id}`}
-                            className="block truncate text-sm font-medium hover:text-primary"
+                            prefetch={true}
+                            className="block truncate text-sm font-medium transition-colors hover:text-primary active:opacity-75"
                           >
                             {c.latestTopic.title}
                           </Link>

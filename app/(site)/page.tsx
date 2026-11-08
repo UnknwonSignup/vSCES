@@ -40,48 +40,53 @@ export default async function HomePage() {
   ])
 
   const discordUrl = safeUrl(settings.socials.discord)
-  const badges = settings.highlightBadges && settings.highlightBadges.length > 0
-    ? settings.highlightBadges
-    : [
-        { label: 'Vanilla+ Survival SMP', desc: 'Enhanced mechanics & claims', icon: 'sparkles', color: 'purple' },
-        { label: '100% Grief Protected', desc: 'Build safely with shovel claims', icon: 'shield', color: 'emerald' },
-        { label: 'Active Community', desc: 'Friendly staff & active Discord', icon: 'users', color: 'blue' },
-        { label: 'Vote & Earn Rewards', desc: 'Daily keys, cash & perks', icon: 'trophy', color: 'amber' },
-      ]
+  const activeBadges = (settings.highlightBadges || []).filter((b) => b.enabled !== false)
+  const showBadges = features.highlightBadges !== false && activeBadges.length > 0
+  const showHowToJoin = features.howToJoin !== false && settings.howToJoin?.enabled !== false
+  const showFeaturesList = features.featuresList !== false
 
   return (
     <div className="space-y-10">
       {/* Quick Server Highlights Ribbon */}
-      <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-        {badges.map(({ label, desc, icon, color }) => {
-          const Icon = BADGE_ICONS[icon] || Sparkles
-          const colorClass = BADGE_COLORS[color] || 'text-purple-400'
-          return (
-            <div
-              key={label}
-              className="flex items-center gap-3 rounded-xl border border-border/80 bg-card/60 p-3 shadow-sm backdrop-blur transition-all duration-200 hover:border-primary/40 hover:bg-card"
-            >
-              <div className={`flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary/80 ${colorClass}`}>
-                <Icon className="size-4" />
+      {showBadges && (
+        <div className={`grid grid-cols-2 gap-2.5 ${activeBadges.length >= 4 ? 'sm:grid-cols-4' : activeBadges.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2'}`}>
+          {activeBadges.map(({ label, desc, icon, color }) => {
+            const Icon = BADGE_ICONS[icon] || Sparkles
+            const colorClass = BADGE_COLORS[color] || 'text-purple-400'
+            return (
+              <div
+                key={label}
+                className="flex items-center gap-3 rounded-xl border border-border/70 bg-card/60 p-3 shadow-sm backdrop-blur transition-all duration-200 hover:border-primary/40 hover:bg-card"
+              >
+                <div className={`flex size-9 shrink-0 items-center justify-center rounded-lg bg-secondary/80 ${colorClass}`}>
+                  <Icon className="size-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-xs font-bold text-foreground">{label}</p>
+                  <p className="truncate text-[11px] text-muted-foreground">{desc}</p>
+                </div>
               </div>
-              <div className="min-w-0">
-                <p className="truncate text-xs font-bold text-foreground">{label}</p>
-                <p className="truncate text-[11px] text-muted-foreground">{desc}</p>
-              </div>
-            </div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+      )}
 
       {/* Interactive Connection Guide (Java & Bedrock) */}
-      <HowToJoin
-        serverIp={settings.serverIp}
-        howToJoin={settings.howToJoin}
-        serverName={settings.serverName}
-      />
+      {showHowToJoin && (
+        <HowToJoin
+          serverIp={settings.serverIp}
+          howToJoin={settings.howToJoin}
+          serverName={settings.serverName}
+        />
+      )}
 
       {/* Features Showcase Grid */}
-      <FeaturesShowcase featuresList={settings.featuresList} />
+      {showFeaturesList && (
+        <FeaturesShowcase
+          featuresList={settings.featuresList}
+          serverName={settings.serverName}
+        />
+      )}
 
       {/* Main Content Layout: Announcements & Forum + Sidebar Widgets */}
       <div className="flex flex-col gap-8 lg:flex-row">

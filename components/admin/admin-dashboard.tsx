@@ -60,19 +60,41 @@ export function AdminDashboard({
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8">
-        <Tabs defaultValue="general" className="gap-6">
-          <TabsList className="flex h-auto w-full flex-wrap justify-start">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="homepage">Homepage &amp; Layout</TabsTrigger>
-            <TabsTrigger value="features">Sections</TabsTrigger>
-            <TabsTrigger value="socials">Socials</TabsTrigger>
-            <TabsTrigger value="content">Rules, Vote &amp; Store</TabsTrigger>
-            <TabsTrigger value="announcements">Announcements</TabsTrigger>
-            <TabsTrigger value="forum">Forum</TabsTrigger>
-            <TabsTrigger value="staff">Staff</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="tickets">Tickets</TabsTrigger>
-            <TabsTrigger value="logo">Logo Maker</TabsTrigger>
+        <Tabs defaultValue="homepage" className="gap-6">
+          <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 p-1.5 bg-secondary/30 rounded-xl border border-border/60">
+            <TabsTrigger value="homepage" className="gap-1.5 py-1.5 px-3 text-xs font-semibold">
+              🏠 Homepage
+            </TabsTrigger>
+            <TabsTrigger value="general" className="gap-1.5 py-1.5 px-3 text-xs font-semibold">
+              🎨 Theme &amp; Details
+            </TabsTrigger>
+            <TabsTrigger value="logo" className="gap-1.5 py-1.5 px-3 text-xs font-semibold">
+              💎 3D Logo Maker
+            </TabsTrigger>
+            <TabsTrigger value="content" className="gap-1.5 py-1.5 px-3 text-xs font-semibold">
+              📜 Rules &amp; Store
+            </TabsTrigger>
+            <TabsTrigger value="features" className="gap-1.5 py-1.5 px-3 text-xs font-semibold">
+              ⚙️ Sections
+            </TabsTrigger>
+            <TabsTrigger value="socials" className="gap-1.5 py-1.5 px-3 text-xs font-semibold">
+              🌐 Socials
+            </TabsTrigger>
+            <TabsTrigger value="announcements" className="gap-1.5 py-1.5 px-3 text-xs font-semibold">
+              📣 Announcements
+            </TabsTrigger>
+            <TabsTrigger value="forum" className="gap-1.5 py-1.5 px-3 text-xs font-semibold">
+              💬 Forum
+            </TabsTrigger>
+            <TabsTrigger value="staff" className="gap-1.5 py-1.5 px-3 text-xs font-semibold">
+              🛡️ Staff
+            </TabsTrigger>
+            <TabsTrigger value="users" className="gap-1.5 py-1.5 px-3 text-xs font-semibold">
+              👤 Users
+            </TabsTrigger>
+            <TabsTrigger value="tickets" className="gap-1.5 py-1.5 px-3 text-xs font-semibold">
+              🎫 Tickets
+            </TabsTrigger>
           </TabsList>
 
           <SettingsEditor settings={settings} />

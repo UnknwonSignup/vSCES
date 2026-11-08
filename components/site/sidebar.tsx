@@ -1,9 +1,10 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Home, MessagesSquare, ScrollText, ShoppingCart, ThumbsUp, Ticket, Users, Bot, Sparkles } from 'lucide-react'
+import { Home, MessagesSquare, ScrollText, ShoppingCart, ThumbsUp, Ticket, Users, Bot } from 'lucide-react'
 import type { FeatureKey, NavigationStyle } from '@/lib/settings-shared'
 import { cn } from '@/lib/utils'
 import { useChatbot } from './chatbot-context'
@@ -44,197 +45,254 @@ export function Sidebar({
 }) {
   const pathname = usePathname()
   const { open: chatOpen, toggle: toggleChat } = useChatbot()
+  const [pendingHref, setPendingHref] = useState<string | null>(null)
+
+  // Reset optimistic state whenever the real pathname catches up
+  useEffect(() => {
+    setPendingHref(null)
+  }, [pathname])
+
   const items = NAV.filter((item) => !item.feature || features[item.feature])
+
+  // Instant optimistic active check
+  const isItemActive = (href: string) => {
+    const target = pendingHref !== null ? pendingHref : pathname
+    return href === '/' ? target === '/' : target.startsWith(href)
+  }
+
+  const handleNavClick = (href: string) => {
+    setPendingHref(href)
+  }
 
   // ── Top Bar Mode ──────────────────────────────────────────────────────────
   if (mode === 'topbar') {
     return (
-      <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/80 backdrop-blur-xl transition-all">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative size-8 overflow-hidden rounded-lg border border-primary/30 bg-primary/10 shadow-sm transition-transform duration-200 group-hover:scale-105">
-              <Image
-                src="/images/reverie-logo.png"
-                alt={serverName}
-                fill
-                className="object-contain p-1"
-                priority
-              />
-            </div>
-            <span className="font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
-              {serverName}
-            </span>
-          </Link>
-
-          <nav aria-label="Top navigation" className="hidden md:flex items-center gap-1">
-            {items.map(({ href, label, icon: Icon }) => {
-              const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={cn(
-                    'relative flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all duration-200',
-                    active
-                      ? 'bg-primary/15 text-primary shadow-sm border border-primary/25'
-                      : 'text-muted-foreground hover:bg-secondary/70 hover:text-foreground'
-                  )}
-                >
-                  <Icon className="size-3.5" />
-                  <span>{label}</span>
-                  {active && (
-                    <span className="absolute -bottom-px left-1/2 -translate-x-1/2 h-0.5 w-6 rounded-full bg-primary" />
-                  )}
-                </Link>
-              )
-            })}
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={toggleChat}
-              aria-label="Open AI chat"
-              className={cn(
-                'flex items-center gap-1.5 rounded-xl border border-border/80 px-3 py-1.5 text-xs font-semibold transition-all duration-200',
-                chatOpen
-                  ? 'bg-primary text-primary-foreground border-primary shadow-md'
-                  : 'bg-card/80 text-muted-foreground hover:border-primary/40 hover:text-foreground'
-              )}
-            >
-              <Bot className="size-3.5" />
-              <span className="hidden sm:inline">AI Chat</span>
-            </button>
-
-            {discordUrl && (
-              <a
-                href={discordUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 rounded-xl bg-[#5865F2] px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-[#5865F2]/20 transition-all hover:bg-[#4752c4] hover:scale-[1.02] active:scale-95"
-              >
-                <DiscordIcon className="size-3.5" />
-                <span className="hidden sm:inline">Discord</span>
-              </a>
-            )}
+      <>
+        {/* Subtle Route Progress Line */}
+        {pendingHref !== null && (
+          <div className="fixed inset-x-0 top-0 z-50 h-[2px] bg-primary/20 pointer-events-none">
+            <div className="h-full w-2/3 bg-primary transition-all duration-300" />
           </div>
-        </div>
+        )}
 
-        {/* Mobile bottom nav bar when in topbar mode */}
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 backdrop-blur-md md:hidden">
-          <ul className="flex h-14 items-center justify-around px-2">
-            {items.map(({ href, label, icon: Icon }) => {
-              const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
-              return (
-                <li key={href}>
+        <header className="sticky top-0 z-40 w-full border-b border-border/70 bg-background/90 backdrop-blur-xl transition-all">
+          <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+            <Link
+              href="/"
+              prefetch={true}
+              onClick={() => handleNavClick('/')}
+              className="flex items-center gap-3 group transition-transform duration-200 active:scale-95"
+            >
+              <div className="relative size-8 overflow-hidden rounded-lg border border-primary/20 bg-primary/5 shadow-sm transition-transform duration-200 group-hover:scale-105">
+                <Image
+                  src="/images/reverie-logo.png"
+                  alt={serverName}
+                  fill
+                  className="object-contain p-1"
+                  priority
+                />
+              </div>
+              <span className="font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
+                {serverName}
+              </span>
+            </Link>
+
+            <nav aria-label="Top navigation" className="hidden md:flex items-center gap-1.5">
+              {items.map(({ href, label, icon: Icon }) => {
+                const active = isItemActive(href)
+                return (
                   <Link
+                    key={href}
                     href={href}
+                    prefetch={true}
+                    onClick={() => handleNavClick(href)}
                     className={cn(
-                      'flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[10px] font-medium transition-colors',
-                      active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+                      'relative flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-semibold transition-all duration-200 select-none',
+                      'hover:-translate-y-0.5 active:scale-95',
+                      active
+                        ? 'bg-primary/15 text-primary shadow-sm border border-primary/25'
+                        : 'text-muted-foreground hover:bg-secondary/70 hover:text-foreground'
                     )}
                   >
-                    <Icon className="size-4" />
+                    <Icon className={cn('size-3.5 transition-transform duration-200', active && 'scale-110 text-primary')} />
                     <span>{label}</span>
+                    {active && (
+                      <span className="absolute -bottom-[1px] left-3 right-3 h-[2px] rounded-full bg-primary" />
+                    )}
                   </Link>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      </header>
+                )
+              })}
+            </nav>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleChat}
+                aria-label="Open AI chat"
+                className={cn(
+                  'flex items-center gap-1.5 rounded-xl border border-border/80 px-3 py-1.5 text-xs font-semibold transition-all duration-200 active:scale-95 hover:scale-105',
+                  chatOpen
+                    ? 'bg-primary text-primary-foreground border-primary shadow-md shadow-primary/30'
+                    : 'bg-card/80 text-muted-foreground hover:border-primary/40 hover:text-foreground'
+                )}
+              >
+                <Bot className="size-3.5" />
+                <span className="hidden sm:inline">AI Chat</span>
+              </button>
+
+              {discordUrl && (
+                <a
+                  href={discordUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 rounded-xl bg-[#5865F2] px-3.5 py-1.5 text-xs font-bold text-white shadow-md shadow-[#5865F2]/20 transition-all hover:bg-[#4752c4] hover:scale-[1.03] active:scale-95"
+                >
+                  <DiscordIcon className="size-3.5" />
+                  <span className="hidden sm:inline">Discord</span>
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile bottom nav bar when in topbar mode */}
+          <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-background/95 backdrop-blur-md md:hidden">
+            <ul className="flex h-14 items-center justify-around px-2">
+              {items.map(({ href, label, icon: Icon }) => {
+                const active = isItemActive(href)
+                return (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      prefetch={true}
+                      onClick={() => handleNavClick(href)}
+                      className={cn(
+                        'flex flex-col items-center gap-0.5 rounded-lg p-1.5 text-[10px] font-medium transition-all duration-150 active:scale-90',
+                        active ? 'text-primary font-bold scale-105' : 'text-muted-foreground hover:text-foreground'
+                      )}
+                    >
+                      <Icon className="size-4" />
+                      <span>{label}</span>
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </header>
+      </>
     )
   }
 
   // ── Modern Sidebar Mode ───────────────────────────────────────────────────
   const itemCls = (active?: boolean) =>
     cn(
-      'group relative flex flex-col items-center gap-1 rounded-xl px-2.5 py-2 text-[10px] font-medium text-muted-foreground transition-all duration-200 hover:text-foreground',
+      'group relative flex flex-col items-center gap-1 rounded-xl px-2.5 py-2 text-[10px] font-medium text-muted-foreground transition-all duration-200 select-none',
+      'hover:text-foreground active:scale-95',
       active && 'text-foreground font-semibold',
     )
 
   const iconCls = (active?: boolean) =>
     cn(
-      'flex size-10 items-center justify-center rounded-xl border border-transparent transition-all duration-200 group-hover:bg-secondary group-hover:scale-105',
+      'flex size-10 items-center justify-center rounded-xl border border-transparent transition-all duration-200 group-hover:scale-105',
       active
-        ? 'bg-gradient-to-br from-primary via-primary to-brand-to text-primary-foreground border-primary/40 shadow-[0_0_24px_-2px] shadow-primary/60 scale-105'
-        : 'text-muted-foreground',
+        ? 'bg-primary text-primary-foreground border-primary/30 shadow-sm scale-105 ring-1 ring-primary/20'
+        : 'text-muted-foreground group-hover:bg-secondary/70 group-hover:text-foreground',
     )
 
   return (
-    <nav
-      aria-label="Main navigation"
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-sidebar/95 backdrop-blur-xl md:inset-y-0 md:left-0 md:right-auto md:w-20 md:border-r md:border-t-0 md:py-4"
-    >
-      <ul className="flex h-16 items-center justify-around md:h-full md:flex-col md:justify-start md:gap-3">
-        {/* Server Emblem at Top of Sidebar */}
-        <li className="hidden md:block mb-2">
-          <Link href="/" className="group flex size-11 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 shadow-sm transition-all duration-200 hover:border-primary/60 hover:scale-105">
-            <Image
-              src="/images/reverie-logo.png"
-              alt={serverName}
-              width={32}
-              height={32}
-              className="size-7 object-contain"
-              priority
-            />
-          </Link>
-        </li>
+    <>
+      {/* Subtle Route Progress Line */}
+      {pendingHref !== null && (
+        <div className="fixed inset-x-0 top-0 z-50 h-[2px] bg-primary/20 pointer-events-none">
+          <div className="h-full w-2/3 bg-primary transition-all duration-300" />
+        </div>
+      )}
 
-        {items.map(({ href, label, icon: Icon }) => {
-          const active = href === '/' ? pathname === '/' : pathname.startsWith(href)
-          return (
-            <li key={href}>
-              <Link
-                href={href}
-                aria-current={active ? 'page' : undefined}
-                className={itemCls(active)}
-              >
-                <span className={iconCls(active)}>
-                  <Icon className="size-4" aria-hidden="true" />
-                </span>
-                <span className="truncate max-w-[64px]">{label}</span>
-              </Link>
-            </li>
-          )
-        })}
-
-        {/* Spacer */}
-        <li className="hidden flex-1 md:block" aria-hidden="true" />
-
-        {/* AI Chat button */}
-        <li>
-          <button
-            onClick={toggleChat}
-            aria-label="Open AI chat"
-            aria-pressed={chatOpen}
-            className={itemCls(chatOpen)}
-          >
-            <span className={iconCls(chatOpen)}>
-              <Bot className="size-4" aria-hidden="true" />
-            </span>
-            <span className="hidden md:block truncate">AI Chat</span>
-          </button>
-        </li>
-
-        {/* Discord link */}
-        {discordUrl && (
-          <li>
-            <a
-              href={discordUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Discord"
-              className={itemCls()}
+      <nav
+        aria-label="Main navigation"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-border/80 bg-sidebar/95 backdrop-blur-xl md:inset-y-0 md:left-0 md:right-auto md:w-20 md:border-r md:border-t-0 md:py-4 transition-all"
+      >
+        <ul className="flex h-16 items-center justify-around md:h-full md:flex-col md:justify-start md:gap-3">
+          {/* Server Emblem at Top of Sidebar */}
+          <li className="hidden md:block mb-2">
+            <Link
+              href="/"
+              prefetch={true}
+              onClick={() => handleNavClick('/')}
+              className="group flex size-11 items-center justify-center rounded-2xl border border-primary/20 bg-primary/5 shadow-sm transition-all duration-200 hover:border-primary/50 hover:scale-105 active:scale-95"
             >
-              <span className={iconCls()}>
-                <DiscordIcon className="size-4 text-[#5865F2]" />
-              </span>
-              <span className="hidden md:block truncate">Discord</span>
-            </a>
+              <Image
+                src="/images/reverie-logo.png"
+                alt={serverName}
+                width={32}
+                height={32}
+                className="size-7 object-contain transition-transform duration-200 group-hover:scale-110"
+                priority
+              />
+            </Link>
           </li>
-        )}
-      </ul>
-    </nav>
+
+          {items.map(({ href, label, icon: Icon }) => {
+            const active = isItemActive(href)
+            return (
+              <li key={href} className="relative">
+                <Link
+                  href={href}
+                  prefetch={true}
+                  onClick={() => handleNavClick(href)}
+                  aria-current={active ? 'page' : undefined}
+                  className={itemCls(active)}
+                >
+                  {/* Subtle active notch indicator */}
+                  {active && (
+                    <span className="hidden md:block absolute -left-2 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full bg-primary" />
+                  )}
+
+                  <span className={iconCls(active)}>
+                    <Icon className={cn("size-4 transition-transform duration-200", active && "scale-110")} aria-hidden="true" />
+                  </span>
+                  <span className="truncate max-w-[64px] transition-colors">{label}</span>
+                </Link>
+              </li>
+            )
+          })}
+
+          {/* Spacer */}
+          <li className="hidden flex-1 md:block" aria-hidden="true" />
+
+          {/* AI Chat button */}
+          <li>
+            <button
+              onClick={toggleChat}
+              aria-label="Open AI chat"
+              aria-pressed={chatOpen}
+              className={itemCls(chatOpen)}
+            >
+              <span className={iconCls(chatOpen)}>
+                <Bot className="size-4" aria-hidden="true" />
+              </span>
+              <span className="hidden md:block truncate">AI Chat</span>
+            </button>
+          </li>
+
+          {/* Discord link */}
+          {discordUrl && (
+            <li>
+              <a
+                href={discordUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Discord"
+                className={itemCls()}
+              >
+                <span className={iconCls()}>
+                  <DiscordIcon className="size-4 text-[#5865F2] transition-transform duration-200 group-hover:scale-110" />
+                </span>
+                <span className="hidden md:block truncate">Discord</span>
+              </a>
+            </li>
+          )}
+        </ul>
+      </nav>
+    </>
   )
 }
-
